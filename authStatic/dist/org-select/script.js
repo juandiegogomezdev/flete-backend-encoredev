@@ -276,8 +276,6 @@ async function CreateMembershipCards() {
 
 }
 
-
-
 function convertoTimeStampToLegibleDate(timestamp) {
   // Convert timestamp to dd/mm/yyyy format
   const date = new Date(timestamp);

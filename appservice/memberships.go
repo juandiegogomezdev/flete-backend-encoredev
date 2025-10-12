@@ -20,5 +20,5 @@ func (s *ServiceApp) GetUserMemberships(ctx context.Context) (GetUserMemberships
 }
 
 type GetUserMembershipsResponse struct {
-	Memberships []shared.Membership `json:"memberships"`
+	Memberships []shared.Membership `json:"data"`
 }

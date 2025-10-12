@@ -2,7 +2,8 @@ package appService
 
 import (
 	"context"
-	"net/http"
+	"fmt"
+	"strings"
 
 	"encore.app/pkg/utils"
 	"encore.dev/beta/errs"
@@ -56,18 +57,20 @@ func (s *ServiceApp) RefreshToken(ctx context.Context) error {
 	}
 }
 
-//encore:api public method=POST path=/session/delete/web
-func (s *ServiceApp) DeleteWebUserSession(ctx context.Context, req requestDeleteSessionWeb) (responseDeleteSessionWeb, error) {
+//encore:api public method=DELETE path=/session/delete/web
+func (s *ServiceApp) DeleteWebUserSession(ctx context.Context, req *requestDeleteSessionWeb) (responseDeleteSessionWeb, error) {
 	// Generate the expired cookie to delete the cookie in the browser
 	deleteCookie := utils.DeleteDefaultCookieOptions("auth_token")
 
-	// Delete the session in a goroutine to not block the response
 	go func() {
-		// Check if the cookie is valid
-		if req.SessionCookie == nil || req.SessionCookie.Value == "" {
+
+		authTokenValue := extractAuthTokenFromCookieHeader(req.SessionCookie)
+		if authTokenValue == "" {
+			fmt.Println("No auth_token found in the Cookie header")
 			return
 		}
-		s.b.DeleteUserSession(ctx, req.SessionCookie.Value)
+
+		s.b.DeleteUserSession(ctx, authTokenValue)
 	}()
 
 	return responseDeleteSessionWeb{
@@ -76,9 +79,28 @@ func (s *ServiceApp) DeleteWebUserSession(ctx context.Context, req requestDelete
 
 }
 
+// Helper function to extract auth_token value from cookie header
+func extractAuthTokenFromCookieHeader(cookieHeader string) string {
+	if cookieHeader == "" {
+		return ""
+	}
+
+	// Split cookies by semicolon
+	cookies := strings.Split(cookieHeader, ";")
+	for _, cookie := range cookies {
+		cookie = strings.TrimSpace(cookie)
+		// Check if this cookie is auth_token
+		if strings.HasPrefix(cookie, "auth_token=") {
+			// Extract the value after "auth_token="
+			return strings.TrimPrefix(cookie, "auth_token=")
+		}
+	}
+	return ""
+}
+
 // Request struct to get the cookie from the request
 type requestDeleteSessionWeb struct {
-	SessionCookie *http.Cookie `cookie:"auth_token"`
+	SessionCookie string `header:"Cookie"`
 }
 
 // Set the expired cookie in the response header

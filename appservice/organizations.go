@@ -26,15 +26,30 @@ type responseHello struct {
 
 // Create a personal organization for the user
 // encore:api auth method=POST path=/org/personal
-func (s *ServiceApp) CreatePersonalOrg(ctx context.Context) (*CreatePersonalOrgResponse, error) {
+func (s *ServiceApp) CreatePersonalOrg(ctx context.Context) (*CreateOrgResponse, error) {
 	data := auth.Data().(*AuthData)
 	membership, err := s.b.CreatePersonalOrganization(ctx, data.UserID, "Trabajo independiente")
 	if err != nil {
 		return nil, err
 	}
-	return &CreatePersonalOrgResponse{Memberships: membership}, nil
+	return &CreateOrgResponse{Memberships: membership}, nil
 }
 
-type CreatePersonalOrgResponse struct {
-	Memberships shared.Membership `json:"memberships"`
+type CreateOrgResponse struct {
+	Memberships shared.Membership `json:"data"`
+}
+
+// Create a company organization for the user
+// encore:api auth method=POST path=/org/company
+func (s *ServiceApp) CreateCompanyOrg(ctx context.Context, req *reqCreateCompanyOrgRequest) (*CreateOrgResponse, error) {
+	data := auth.Data().(*AuthData)
+	membership, err := s.b.CreateCompanyOrganization(ctx, data.UserID, req.CompanyName)
+	if err != nil {
+		return nil, err
+	}
+	return &CreateOrgResponse{Memberships: membership}, nil
+}
+
+type reqCreateCompanyOrgRequest struct {
+	CompanyName string `json:"companyName"`
 }

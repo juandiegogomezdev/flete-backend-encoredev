@@ -60,9 +60,18 @@ func (b *BusinessApp) isPosibleCreateNewSession(ctx context.Context, userID uuid
 func (b *BusinessApp) CreateOrgSelectSession(ctx context.Context, userID uuid.UUID, deviceInfo string) (string, error) {
 	// Check if is posible create a new session and create the sessionID
 	sessionID, err := b.isPosibleCreateNewSession(ctx, userID)
+	if err != nil {
+		return "", err
+	}
 
 	// Create the org select token
 	tokenOrgSelect, err := b.tokenizer.GenerateOrgSelectToken(userID, sessionID)
+	if err != nil {
+		return "", &errs.Error{
+			Code:    errs.Internal,
+			Message: "Error al generar el acceso",
+		}
+	}
 
 	// New session parameters
 	newSession := appstore.CreateUserSessionStruct{

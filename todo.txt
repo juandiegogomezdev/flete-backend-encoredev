@@ -1,1 +1,2 @@
 // TODO Handle error if not error sending email
+// TODO Use webpack on static files
