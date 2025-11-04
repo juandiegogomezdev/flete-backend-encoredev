@@ -1,4 +1,4 @@
-package shared
+package sharedapp
 
 import "encore.dev/types/uuid"
 
@@ -6,7 +6,6 @@ type CreateOrganizationStruct struct {
 	OrgID   uuid.UUID `db:"id"`
 	OwnerID uuid.UUID `db:"owner_user_id"`
 	Name    string    `db:"name"`
-	Type    string    `db:"type"`
 }
 type CreateOwnerMembershipStruct struct {
 	MemID     uuid.UUID `db:"id"`

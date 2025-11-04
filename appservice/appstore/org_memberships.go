@@ -3,7 +3,7 @@ package appstore
 import (
 	"context"
 
-	"encore.app/appservice/shared"
+	"encore.app/appservice/sharedapp"
 	"encore.dev/types/uuid"
 )
 
@@ -23,7 +23,7 @@ func (s *StoreApp) HasActiveMembership(ctx context.Context, userID uuid.UUID, or
 }
 
 // Get all memberships of a user
-func (s *StoreApp) GetUserMemberships(ctx context.Context, userID uuid.UUID) ([]shared.Membership, error) {
+func (s *StoreApp) GetUserMemberships(ctx context.Context, userID uuid.UUID) ([]sharedapp.Membership, error) {
 
 	q := `
 		SELECT
@@ -32,14 +32,13 @@ func (s *StoreApp) GetUserMemberships(ctx context.Context, userID uuid.UUID) ([]
 			om.created_at,
 			om.finalized_at,
 			o.name AS org_name,
-			o.type AS org_type,
 			r.name AS role_name
 		FROM org_memberships om
 		JOIN organizations o ON om.org_id = o.id
 		JOIN roles r ON om.role_id = r.id
 		WHERE om.user_id = $1
 	`
-	memberships := []shared.Membership{}
+	memberships := []sharedapp.Membership{}
 	if err := s.dbx.SelectContext(ctx, &memberships, q, userID); err != nil {
 		return nil, err
 	}

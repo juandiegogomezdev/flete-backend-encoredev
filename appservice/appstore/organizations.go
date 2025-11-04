@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"time"
 
-	"encore.app/appservice/shared"
+	"encore.app/appservice/sharedapp"
 	"encore.dev/types/uuid"
 )
 
@@ -13,7 +13,7 @@ import (
 func (s *StoreApp) GetAllUserOrganizations(ctx context.Context, userID uuid.UUID) ([]ResUserOrganizationStore, error) {
 
 	query := `
-		SELECT id, name, type, created_at
+		SELECT id, name, created_at
 		FROM organizations
 		WHERE owner_user_id = $1
 	`
@@ -27,20 +27,19 @@ func (s *StoreApp) GetAllUserOrganizations(ctx context.Context, userID uuid.UUID
 type ResUserOrganizationStore struct {
 	ID        uuid.UUID `json:"id" db:"id"`
 	Name      string    `json:"name" db:"name"`
-	Type      string    `json:"type" db:"type"`
 	CreatedAt time.Time `json:"created_at" db:"created_at"`
 }
 
 // Create and organization and assign the owner as admin
-func (s *StoreApp) CreateOrgAndMembership(ctx context.Context, newOrg shared.CreateOrganizationStruct, newMembership shared.CreateOwnerMembershipStruct) error {
+func (s *StoreApp) CreateOrgAndMembership(ctx context.Context, newOrg sharedapp.CreateOrganizationStruct, newMembership sharedapp.CreateOwnerMembershipStruct) error {
 	tx, err := s.dbx.BeginTxx(ctx, nil)
 	if err != nil {
 		return err
 	}
 
 	orgQuery := `
-		INSERT INTO organizations (id, owner_user_id, name, type)
-		VALUES (:id, :owner_user_id, :name, :type)
+		INSERT INTO organizations (id, owner_user_id, name)
+		VALUES (:id, :owner_user_id, :name)
 		`
 
 	if _, err := tx.NamedExecContext(ctx, orgQuery, newOrg); err != nil {

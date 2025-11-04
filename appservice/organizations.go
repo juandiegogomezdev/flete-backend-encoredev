@@ -3,7 +3,8 @@ package appService
 import (
 	"context"
 
-	"encore.app/appservice/shared"
+	"encore.app/appservice/sharedapp"
+	"encore.app/authService"
 	"encore.dev/beta/auth"
 )
 
@@ -24,25 +25,10 @@ type responseHello struct {
 	Message string `json:"message"`
 }
 
-// Create a personal organization for the user
-// encore:api auth method=POST path=/org/personal
-func (s *ServiceApp) CreatePersonalOrg(ctx context.Context) (*CreateOrgResponse, error) {
-	data := auth.Data().(*AuthData)
-	membership, err := s.b.CreatePersonalOrganization(ctx, data.UserID, "Trabajo independiente")
-	if err != nil {
-		return nil, err
-	}
-	return &CreateOrgResponse{Memberships: membership}, nil
-}
-
-type CreateOrgResponse struct {
-	Memberships shared.Membership `json:"data"`
-}
-
 // Create a company organization for the user
 // encore:api auth method=POST path=/org/company
-func (s *ServiceApp) CreateCompanyOrg(ctx context.Context, req *reqCreateCompanyOrgRequest) (*CreateOrgResponse, error) {
-	data := auth.Data().(*AuthData)
+func (s *ServiceApp) CreateCompany(ctx context.Context, req *reqCreateCompanyOrgRequest) (*CreateOrgResponse, error) {
+	data := auth.Data().(*authService.AuthData)
 	membership, err := s.b.CreateCompanyOrganization(ctx, data.UserID, req.CompanyName)
 	if err != nil {
 		return nil, err
@@ -52,4 +38,8 @@ func (s *ServiceApp) CreateCompanyOrg(ctx context.Context, req *reqCreateCompany
 
 type reqCreateCompanyOrgRequest struct {
 	CompanyName string `json:"companyName"`
+}
+
+type CreateOrgResponse struct {
+	Memberships sharedapp.Membership `json:"data"`
 }

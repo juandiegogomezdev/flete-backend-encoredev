@@ -4,14 +4,15 @@ import (
 	"context"
 	"time"
 
-	"encore.app/appservice/shared"
+	"encore.app/appservice/sharedapp"
+	"encore.app/authService"
 	"encore.dev/beta/auth"
 )
 
 // Send the memberships of an user
 // encore:api auth method=GET path=/memberships
 func (s *ServiceApp) GetUserMemberships(ctx context.Context) (GetUserMembershipsResponse, error) {
-	memberships, err := s.b.GetAllUserMemberships(ctx, auth.Data().(*AuthData).UserID)
+	memberships, err := s.b.GetAllUserMemberships(ctx, auth.Data().(*authService.AuthData).UserID)
 	if err != nil {
 		return GetUserMembershipsResponse{}, err
 	}
@@ -20,5 +21,5 @@ func (s *ServiceApp) GetUserMemberships(ctx context.Context) (GetUserMemberships
 }
 
 type GetUserMembershipsResponse struct {
-	Memberships []shared.Membership `json:"data"`
+	Memberships []sharedapp.Membership `json:"data"`
 }
