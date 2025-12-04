@@ -3,7 +3,8 @@ CREATE TYPE category_notification AS ENUM (
     'maintenance',
     'information',
     'invitation',
-    'global_announcement'
+    'global_announcement',
+    'welcome'
 );
 
 CREATE TABLE IF NOT EXISTS notification_templates (

@@ -5,7 +5,6 @@ import (
 
 	"encore.app/adminService/adminBusiness"
 	"encore.app/adminService/adminstore"
-	"encore.app/adminService/seeders"
 	"encore.dev/storage/sqldb"
 	"github.com/jmoiron/sqlx"
 )
@@ -14,26 +13,25 @@ var fleteDB = sqldb.Named("db_app")
 var fleteDBX = sqlx.NewDb(fleteDB.Stdlib(), "postgres")
 
 //encore:service
-type adminService struct {
+type AdminService struct {
 	b *adminBusiness.AdminBusiness
 }
 
-func initAdminService() (*adminService, error) {
-	fleteDBX := sqlx.NewDb(fleteDB.Stdlib(), "postgres")
+func initAdminService() (*AdminService, error) {
 
 	store := adminstore.NewAdminStore(fleteDBX)
 	business := adminBusiness.NewAdminBusiness(store)
 
-	return &adminService{
+	return &AdminService{
 		b: business,
 	}, nil
 }
 
 //encore:api private method=POST path=/admin/seed
-func (s *adminService) SeedDatabase(ctx context.Context) (ResponseSeedDatabase, error) {
-	return seeders.RunSeed(s.db)
+func (s *AdminService) SeedDatabase(ctx context.Context) error {
+	return s.b.SeedNotificationTemplates(ctx)
 }
 
-type ResponseSeedDatabase struct {
-	Message string `json:"message"`
-}
+// type ResponseSeedDatabase struct {
+// 	Message string `json:"message"`
+// }
