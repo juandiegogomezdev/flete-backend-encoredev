@@ -4,7 +4,7 @@ import (
 	"context"
 
 	"encore.app/appservice/sharedapp"
-	"encore.app/authService"
+	"encore.app/authhandler"
 	"encore.dev/beta/auth"
 )
 
@@ -28,7 +28,7 @@ type responseHello struct {
 // Create a company organization for the user
 // encore:api auth method=POST path=/org/company
 func (s *ServiceApp) CreateCompany(ctx context.Context, req *reqCreateCompanyOrgRequest) (*CreateOrgResponse, error) {
-	data := auth.Data().(*authService.AuthData)
+	data := auth.Data().(*authhandler.AuthData)
 	membership, err := s.b.CreateCompanyOrganization(ctx, data.UserID, req.CompanyName)
 	if err != nil {
 		return nil, err

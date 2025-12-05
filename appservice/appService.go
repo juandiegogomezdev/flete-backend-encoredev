@@ -3,7 +3,6 @@ package appService
 import (
 	"encore.app/appservice/appbusiness"
 	"encore.app/appservice/appstore"
-	"encore.app/pkg/myjwt"
 	"encore.app/pkg/resendmailer"
 	"encore.dev/storage/sqldb"
 	"github.com/jmoiron/sqlx"
@@ -31,12 +30,11 @@ type ServiceApp struct {
 }
 
 func initServiceApp() (*ServiceApp, error) {
-	tokenizer := myjwt.NewJWTTokenizer(secrets.JWT_SECRET_KEY)
 
 	// Initialize the resend mailer
 	m := resendmailer.NewResendMailer(secrets.RESEND_API_KEY, "Acme <onboarding@resend.dev>")
 	s := appstore.NewStoreApp(appDB, appDBX)
-	b := appbusiness.NewAppBusiness(s, tokenizer, m)
+	b := appbusiness.NewAppBusiness(s, m)
 
 	return &ServiceApp{b: b}, nil
 }
