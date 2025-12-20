@@ -4,7 +4,6 @@ import (
 	"encore.app/appservice/appbusiness"
 	"encore.app/appservice/appstore"
 	"encore.app/pkg/resendmailer"
-	"encore.dev/storage/sqldb"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -13,9 +12,6 @@ var secrets struct {
 	RESEND_API_KEY string
 }
 
-var appDB = sqldb.NewDatabase("db_app", sqldb.DatabaseConfig{
-	Migrations: "./migrations",
-})
 var appDBX = sqlx.NewDb(appDB.Stdlib(), "postgres")
 
 type ServiceConfig struct {

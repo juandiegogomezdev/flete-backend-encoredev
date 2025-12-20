@@ -4,3 +4,5 @@ encore.gen.cue
 /encore.gen
 
 *.jpg
+
+cmd/seed/data/

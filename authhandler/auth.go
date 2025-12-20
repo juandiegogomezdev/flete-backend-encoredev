@@ -4,15 +4,19 @@ import (
 	"context"
 	"fmt"
 
-	"encore.app/authhandler/sharedauth"
+	"encore.app/authhandler/authbusiness"
+	"encore.app/authhandler/authstore"
 	"encore.dev/beta/auth"
 	"encore.dev/beta/errs"
+	"encore.dev/storage/sqldb"
 	"encore.dev/types/uuid"
 	"github.com/clerk/clerk-sdk-go/v2"
 	"github.com/clerk/clerk-sdk-go/v2/jwks"
 	"github.com/clerk/clerk-sdk-go/v2/jwt"
 	"github.com/clerk/clerk-sdk-go/v2/user"
 )
+
+var primaryDB = sqldb.Named("primary_db")
 
 var secrets struct {
 	ClerkSecretKey string
@@ -21,9 +25,12 @@ var secrets struct {
 //encore:service
 type AuthHandler struct {
 	jwksClient *jwks.Client
+	b          *authbusiness.AuthBusiness
 }
 
 func initAuthHandler() (*AuthHandler, error) {
+
+	// Clerk setup
 	if secrets.ClerkSecretKey == "" {
 		return nil, fmt.Errorf("CLERK_SECRET_KEY no está configurada")
 	}
@@ -34,52 +41,52 @@ func initAuthHandler() (*AuthHandler, error) {
 	config.Key = clerk.String(secrets.ClerkSecretKey)
 
 	jwksClient := jwks.NewClient(config)
-	return &AuthHandler{jwksClient: jwksClient}, nil
+
+	// Initialize AuthBusiness with AuthStore
+	store := authstore.NewAuthStore(primaryDB)
+	business := authbusiness.NewAuthBusiness(store)
+
+	return &AuthHandler{jwksClient: jwksClient, b: business}, nil
 }
 
 //encore:authhandler
 func (s *AuthHandler) AuthHandler(ctx context.Context, p *Params) (auth.UID, *AuthData, error) {
 
-	// %+v prints with field names: {Name:Arun Age:25}
-	userSub, err := verifySessionToken(ctx, p.Token, s.jwksClient)
-
-	fmt.Println("user: ", userSub, "err: ", err)
-
+	// Verify session token and get user info
+	usr, err := verifySessionToken(ctx, p.Token, s.jwksClient)
 	if err != nil {
-		return "", nil, &errs.Error{
-			Code:    errs.Unauthenticated,
-			Message: "Error al autenticar el usuario.",
-			Details: sharedauth.ErrorDetailsToken{TokenStatus: "not_implemented"},
-		}
-
+		return "", nil, err
 	}
 
-	// Este error es controlado, ignorar esto. No se ha implementado toda la logica por eso se lanza error
-	return "", nil, &errs.Error{
-		Code:    errs.Unauthenticated,
-		Message: "Error al autenticar el usuario. ",
-		Details: sharedauth.ErrorDetailsToken{TokenStatus: "not_implemented"},
+	// Ensure user exists in our database
+	err = s.b.CreateUserIfNotExists(ctx, usr)
+	if err != nil {
+		return "", nil, err
 	}
+
+	// Return auth data with selected membership ID
+	membershipID := uuid.FromStringOrNil(p.MembershipIdSelected)
+	return auth.UID(usr.ID), &AuthData{
+		MembershipID: membershipID,
+	}, nil
+
 }
 
 type Params struct {
-	Token string `header:"authorization"`
-	// Extract the authorization header
+	Token                string `header:"authorization"`
 	MembershipIdSelected string `header:"X-Membership-ID"`
 }
 
 type AuthData struct {
-	UserID       uuid.UUID
-	SessionID    uuid.UUID
 	MembershipID uuid.UUID
 }
 
-func verifySessionToken(ctx context.Context, sessionToken string, jwksClient *jwks.Client) (string, error) {
+func verifySessionToken(ctx context.Context, sessionToken string, jwksClient *jwks.Client) (*clerk.User, error) {
 	unsafeClaims, err := jwt.Decode(ctx, &jwt.DecodeParams{
 		Token: sessionToken,
 	})
 	if err != nil {
-		return "", &errs.Error{
+		return nil, &errs.Error{
 			Code:    errs.Unauthenticated,
 			Message: "Error al decodificar el token de sesión.",
 		}
@@ -90,7 +97,7 @@ func verifySessionToken(ctx context.Context, sessionToken string, jwksClient *jw
 		JWKSClient: jwksClient,
 	})
 	if err != nil {
-		return "", &errs.Error{
+		return nil, &errs.Error{
 			Code:    errs.Unauthenticated,
 			Message: "1- Error al obtener la clave pública para verificar el token de sesión.",
 		}
@@ -102,7 +109,7 @@ func verifySessionToken(ctx context.Context, sessionToken string, jwksClient *jw
 	})
 
 	if err != nil {
-		return "", &errs.Error{
+		return nil, &errs.Error{
 			Code:    errs.Unauthenticated,
 			Message: "2-Error al obtener la clave pública para verificar el token de sesión.",
 		}
@@ -110,17 +117,12 @@ func verifySessionToken(ctx context.Context, sessionToken string, jwksClient *jw
 
 	usr, err := user.Get(ctx, claims.Subject)
 	if err != nil {
-		return "", &errs.Error{
+		return nil, &errs.Error{
 			Code:    errs.Unauthenticated,
 			Message: "Error al obtener el usuario desde Clerk.",
 		}
 	}
 
-	fmt.Println("user first name: ", *usr.FirstName)
-	fmt.Println("user last name: ", usr.LastName)
-
-	fmt.Println("user email: ", usr.EmailAddresses[0].EmailAddress)
-
-	return usr.ID, nil
+	return usr, nil
 
 }
