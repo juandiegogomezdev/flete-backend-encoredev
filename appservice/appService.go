@@ -4,6 +4,7 @@ import (
 	"encore.app/appservice/appbusiness"
 	"encore.app/appservice/appstore"
 	"encore.app/pkg/resendmailer"
+	"encore.dev/storage/sqldb"
 	"github.com/jmoiron/sqlx"
 )
 
@@ -12,7 +13,9 @@ var secrets struct {
 	RESEND_API_KEY string
 }
 
-var appDBX = sqlx.NewDb(appDB.Stdlib(), "postgres")
+var primaryDB = sqldb.Named("primary_db")
+
+var appDBX = sqlx.NewDb(primaryDB.Stdlib(), "postgres")
 
 type ServiceConfig struct {
 	BaseUrl string
@@ -29,7 +32,7 @@ func initServiceApp() (*ServiceApp, error) {
 
 	// Initialize the resend mailer
 	m := resendmailer.NewResendMailer(secrets.RESEND_API_KEY, "Acme <onboarding@resend.dev>")
-	s := appstore.NewStoreApp(appDB, appDBX)
+	s := appstore.NewStoreApp(primaryDB, appDBX)
 	b := appbusiness.NewAppBusiness(s, m)
 
 	return &ServiceApp{b: b}, nil

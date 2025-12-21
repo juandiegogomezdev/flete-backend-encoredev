@@ -9,8 +9,8 @@ import (
 	"github.com/jmoiron/sqlx"
 )
 
-var fleteDB = sqldb.Named("db_app")
-var fleteDBX = sqlx.NewDb(fleteDB.Stdlib(), "postgres")
+var primaryDB = sqldb.Named("primary_db")
+var primaryDBX = sqlx.NewDb(primaryDB.Stdlib(), "postgres")
 
 //encore:service
 type AdminService struct {
@@ -19,7 +19,7 @@ type AdminService struct {
 
 func initAdminService() (*AdminService, error) {
 
-	store := adminstore.NewAdminStore(fleteDBX)
+	store := adminstore.NewAdminStore(primaryDBX)
 	business := adminBusiness.NewAdminBusiness(store)
 
 	return &AdminService{

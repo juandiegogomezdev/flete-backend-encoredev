@@ -1,6 +1,9 @@
 package models
 
+import "encore.dev/types/uuid"
+
 type Department struct {
-	ID   string `json:"id"`
-	Name string `json:"name"`
+	ID   uuid.UUID `json:"id"`
+	Code string    `json:"code"`
+	Name string    `json:"name"`
 }

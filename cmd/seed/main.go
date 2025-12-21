@@ -4,12 +4,14 @@ import (
 	"database/sql"
 	"fmt"
 
+	_ "github.com/lib/pq"
+
 	"encore.app/cmd/seed/seedbusiness"
 	"encore.app/cmd/seed/seedstore"
 )
 
 func main() {
-	connStr := "user=youruser dbname=yourdb sslmode=disable" // Update with your DB connection string
+	connStr := "postgresql://encoretruck-zpoi:local@127.0.0.1:9500/primary_db?sslmode=disable" // Update with your DB connection string
 	db, err := sql.Open("postgres", connStr)
 	if err != nil {
 		panic(err)
