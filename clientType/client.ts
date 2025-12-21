@@ -126,13 +126,13 @@ export namespace appService {
          */
         public async CreateCompany(params: reqCreateCompanyOrgRequest): Promise<CreateOrgResponse> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI("POST", `/org/company`, JSON.stringify(params))
+            const resp = await this.baseClient.calltypedAPI("POST", `/org/company`, JSON.stringify(params))
             return await resp.json() as CreateOrgResponse
         }
 
         public async GetAllOrganizations(): Promise<responseGetAllOrganizations> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI("GET", `/org`)
+            const resp = await this.baseClient.calltypedAPI("GET", `/org`)
             return await resp.json() as responseGetAllOrganizations
         }
 
@@ -141,19 +141,19 @@ export namespace appService {
          */
         public async GetUserMemberships(): Promise<GetUserMembershipsResponse> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI("GET", `/memberships`)
+            const resp = await this.baseClient.calltypedAPI("GET", `/memberships`)
             return await resp.json() as GetUserMembershipsResponse
         }
 
         public async HealthCheck(): Promise<HealthResponse> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI("GET", `/health`)
+            const resp = await this.baseClient.calltypedAPI("GET", `/health`)
             return await resp.json() as HealthResponse
         }
 
         public async Hello(): Promise<responseHello> {
             // Now make the actual call to the API
-            const resp = await this.baseClient.callTypedAPI("GET", `/org/hello`)
+            const resp = await this.baseClient.calltypedAPI("GET", `/org/hello`)
             return await resp.json() as responseHello
         }
     }
@@ -545,11 +545,11 @@ class BaseClient {
         return new StreamOut(this.baseURL + path + queryString, headers);
     }
 
-    // callTypedAPI makes an API call, defaulting content type to "application/json"
-    public async callTypedAPI(method: string, path: string, body?: RequestInit["body"], params?: CallParameters): Promise<Response> {
+    // calltypedAPI makes an API call, defaulting content type to "application/json"
+    public async calltypedAPI(method: string, path: string, body?: RequestInit["body"], params?: CallParameters): Promise<Response> {
         return this.callAPI(method, path, body, {
             ...params,
-            headers: { "Content-Type": "application/json", ...params?.headers }
+            headers: { "Content-type": "application/json", ...params?.headers }
         });
     }
 
@@ -686,7 +686,7 @@ export class APIError extends Error {
 }
 
 /**
- * Typeguard allowing use of an APIError's fields'
+ * typeguard allowing use of an APIError's fields'
  */
 export function isAPIError(err: any): err is APIError {
     return err instanceof APIError;

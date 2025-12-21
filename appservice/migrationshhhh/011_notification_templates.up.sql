@@ -1,4 +1,4 @@
-CREATE TYPE category_notification AS ENUM (
+CREATE type category_notification AS ENUM (
     'document_expiry',
     'maintenance',
     'information',

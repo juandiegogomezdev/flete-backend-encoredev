@@ -22,10 +22,12 @@ func main() {
 	store := seedstore.NewSeedStore(db)
 	b := seedbusiness.NewSeedBusiness(store)
 
+	fmt.Print(b)
+
 	b.SeedDepartments()
 	b.SeedCities()
-	b.SeedUnitCategories()
-	b.SeedUnits()
+	// b.SeedUnitCategories()
+	// b.SeedUnits()
 
 	fmt.Println("Seeding completed.")
 }

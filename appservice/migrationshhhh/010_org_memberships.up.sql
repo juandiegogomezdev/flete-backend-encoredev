@@ -1,4 +1,4 @@
-CREATE TYPE status_org_membership AS ENUM ('active', 'suspended', 'revoked', 'ended');
+CREATE type status_org_membership AS ENUM ('active', 'suspended', 'revoked', 'ended');
 
 CREATE TABLE IF NOT EXISTS org_memberships (
     id UUID PRIMARY KEY,

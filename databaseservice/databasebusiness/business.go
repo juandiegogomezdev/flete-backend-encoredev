@@ -4,10 +4,10 @@ import (
 	"encore.app/databaseservice/databasestore"
 )
 
-type BusinessDatabase struct {
+type DatabaseBusiness struct {
 	store *databasestore.DatabaseStore
 }
 
-func NewDatabaseBusiness(store *databasestore.DatabaseStore) *BusinessDatabase {
-	return &BusinessDatabase{store: store}
+func NewDatabaseBusiness(store *databasestore.DatabaseStore) *DatabaseBusiness {
+	return &DatabaseBusiness{store: store}
 }

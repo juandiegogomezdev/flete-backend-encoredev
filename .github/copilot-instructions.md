@@ -8,7 +8,7 @@
   Corey is always knowledgeable of the latest best practices and technologies.
   Corey provides concise, clear, and efficient coding solutions while always offering friendly and approachable manners.
   Unless otherwise specified by the user, Corey defaults to using Encore.go, a Go backend framework, for backend development.
-  Corey has knowledge of various programming languages, frameworks, and best practices, with a particular emphasis on distributed systems, Encore.go, Go(Golang), TypeScript, React, Next.js, and modern development.
+  Corey has knowledge of various programming languages, frameworks, and best practices, with a particular emphasis on distributed systems, Encore.go, Go(Golang), typeScript, React, Next.js, and modern development.
 </corey_info>
 
 <corey_behavior>
@@ -832,7 +832,7 @@ var MyCacheCluster = cache.NewCluster("my-cache-cluster", cache.ClusterConfig{
 
 <keyspaces>
 <concept>
-<description>Type-safe solution for managing cache keys and values</description>
+<description>type-safe solution for managing cache keys and values</description>
 <components>
 - Key type for storage location
 - Value type for stored data
@@ -1580,12 +1580,12 @@ package mysvc
 
 import "encore.dev/config"
 
-type SomeConfigType struct {
+type SomeConfigtype struct {
     ReadOnly config.Bool
     Example  config.String
 }
 
-var cfg *SomeConfigType = config.Load[*SomeConfigType]()
+var cfg *SomeConfigtype = config.Load[*SomeConfigtype]()
 </code>
 <rules>
 - Must be at package level
@@ -1638,7 +1638,7 @@ type SvcConfig struct {
 <provided_fields>
 - APIBaseURL: Base URL of Encore API
 - Environment.Name: Environment name
-- Environment.Type: production/development/ephemeral/test
+- Environment.type: production/development/ephemeral/test
 - Environment.Cloud: aws/gcp/encore/local
 </provided_fields>
 
@@ -1683,7 +1683,7 @@ _portsAreValid: true
 <implementation>Array with conditional values</implementation>
 <example>
 SendEmailsFrom: [
-    if #Meta.Environment.Type == "production" { "prod@example.com" },
+    if #Meta.Environment.type == "production" { "prod@example.com" },
     "dev@example.com",
 ][0]
 </example>
@@ -1824,7 +1824,7 @@ func Audit(ctx context.Context, action message, user auth.UID) error {
 <environment_checks>
 <example>
 <code>
-switch encore.Meta().Environment.Type {
+switch encore.Meta().Environment.type {
 case encore.EnvTest, encore.EnvDevelopment:
     return MarkEmailVerified(ctx, userID)
 default:
@@ -1878,7 +1878,7 @@ func (s *Service) MyMiddleware(req middleware.Request, next middleware.Next) mid
 func CachingMiddleware(req middleware.Request, next middleware.Next) middleware.Response {
     data := req.Data()
     cacheKey := data.Path
-    if cached, err := loadFromCache(cacheKey, data.API.ResponseType); err == nil && cached != nil {
+    if cached, err := loadFromCache(cacheKey, data.API.Responsetype); err == nil && cached != nil {
         return middleware.Response{Payload: cached}
     }
     return next(req)
@@ -2562,7 +2562,7 @@ https://github.com/encoredev/examples/tree/main/uptime
 <purpose>Generate API client</purpose>
 <languages>
 - go: Go client with net/http
-- typescript: TypeScript with Fetch API
+- typescript: typeScript with Fetch API
 - javascript: JavaScript with Fetch API
 - openapi: OpenAPI spec
 </languages>

@@ -1,4 +1,4 @@
-CREATE TYPE type_organizations AS ENUM ('company', 'personal');
+CREATE type type_organizations AS ENUM ('company', 'personal');
 
 CREATE TABLE IF NOT EXISTS organizations (
     id UUID PRIMARY KEY,

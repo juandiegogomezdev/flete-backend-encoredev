@@ -31,12 +31,26 @@ func (s *AuthBusiness) CreateUserIfNotExists(ctx context.Context, usr *clerk.Use
 		return nil
 	}
 
+	email := ""
+
+	if usr.EmailAddresses != nil && len(usr.EmailAddresses) > 0 {
+		email = usr.EmailAddresses[0].EmailAddress
+	}
+
+	phone := ""
+	if usr.PhoneNumbers != nil && len(usr.PhoneNumbers) > 0 {
+		phone = usr.PhoneNumbers[0].PhoneNumber
+	}
+
 	user := authstore.UserCreateParams{
 		ID:        usr.ID,
-		Email:     usr.EmailAddresses[0].EmailAddress,
+		Email:     email,
 		FirstName: *usr.FirstName,
 		LastName:  *usr.LastName,
+		Phone:     phone,
 	}
+
+	fmt.Println("new User", user)
 
 	err = s.store.CreateUser(ctx, &user)
 	if err != nil {

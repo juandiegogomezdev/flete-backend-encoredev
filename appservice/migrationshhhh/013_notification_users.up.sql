@@ -1,4 +1,4 @@
-CREATE TYPE notification_user_status AS ENUM (
+CREATE type notification_user_status AS ENUM (
     'unread',
     'read',
     'action_taken'
