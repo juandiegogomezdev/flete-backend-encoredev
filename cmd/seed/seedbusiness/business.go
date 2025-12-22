@@ -47,25 +47,8 @@ func (b *SeedBusiness) SeedCities() error {
 	return nil
 }
 
-func (b *SeedBusiness) SeedUnitCategories() error {
-
-	unitCategories, err := utils.ReadJsonFile[models.UnitCategory]("cmd/seed/data/3_unit_categories.json")
-	if err != nil {
-		fmt.Println("3_unit_categories => Error: ", err)
-		return err
-	}
-	err = b.store.InsertUnitCategories(unitCategories)
-	if err != nil {
-		fmt.Println("3_unit_categories => Error: ", err)
-		return err
-	}
-
-	fmt.Println("3_unit_categories => Ok")
-	return nil
-}
-
 func (b *SeedBusiness) SeedUnits() error {
-	units, err := utils.ReadJsonFile[models.Unit]("cmd/processedData/4_units.json")
+	units, err := utils.ReadJsonFile[models.Unit]("cmd/data/processedData/3_units.json")
 
 	if err != nil {
 		fmt.Println("4_units => Error: ", err)
@@ -78,5 +61,21 @@ func (b *SeedBusiness) SeedUnits() error {
 	}
 
 	fmt.Println("4_units => Ok")
+	return nil
+}
+
+func (b *SeedBusiness) SeedRoles() error {
+	roles, err := utils.ReadJsonFile[models.Role]("cmd/data/processedData/5_roles.json")
+	if err != nil {
+		fmt.Println("5_roles=> Error", err)
+		return err
+	}
+	err = b.store.InsertRoles(roles)
+	if err != nil {
+		fmt.Println("5_roles => Error: ", err)
+		return err
+	}
+
+	fmt.Println("5_roles => Ok")
 	return nil
 }

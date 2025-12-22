@@ -6,3 +6,5 @@ encore.gen.cue
 *.jpg
 
 cmd/data/
+
+clientType/

@@ -24,6 +24,7 @@ func (s *DatabaseStore) GetDepartments(ctx context.Context) ([]models.Department
 		if err := rows.Scan(&dept.ID, &dept.Name, &dept.Code); err != nil {
 			return nil, fmt.Errorf("scan department: %w", err)
 		}
+		fmt.Println("dept", dept)
 		departments = append(departments, dept)
 	}
 

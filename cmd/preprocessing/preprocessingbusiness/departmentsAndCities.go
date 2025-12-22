@@ -8,6 +8,8 @@ import (
 	"encore.app/databaseservice/models"
 	"encore.app/pkg/utils"
 	"encore.dev/types/uuid"
+	"golang.org/x/text/cases"
+	"golang.org/x/text/language"
 )
 
 type DepartmentsAndCities struct {
@@ -36,25 +38,33 @@ type Department struct {
 	Name string
 }
 
-func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() error {
+func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() {
 
 	// Read data from JSON files and seed the database
 	citiesAndDepartments, err := utils.ReadJsonFile[DepartmentsAndCities]("cmd/data/rawData/1_cities&departments.json")
 	if err != nil {
 		fmt.Println("departments & cities => Error: ", err)
-		return err
+		return
 	}
 
-	// Transform data: normalize department codes and city codes to string
+	// Transform data
+	// 1- Normalize department codes and city codes to string.
+	// 2- ToLowercase department and city names and Capitalize first letter.
 	var normalized = make([]DepartmentsAndCities2, len(citiesAndDepartments))
 	for i, item := range citiesAndDepartments {
 		departmentCodeStr := fmt.Sprintf("%v", item.DepartmentCode)
 		cityCodeStr := fmt.Sprintf("%v", item.CityCode)
+
+		capitalizer := cases.Title(language.Spanish)
+
+		cityName := capitalizer.String(strings.ToLower(strings.TrimSpace(item.CityName)))
+		departmentName := capitalizer.String(strings.ToLower(strings.TrimSpace(item.DepartmentName)))
+
 		normalized[i] = DepartmentsAndCities2{
 			DepartmentCode: departmentCodeStr,
-			DepartmentName: item.DepartmentName,
+			DepartmentName: departmentName,
 			CityCode:       cityCodeStr,
-			CityName:       item.CityName,
+			CityName:       cityName,
 			CityType:       item.CityType,
 			Longitude:      item.Longitude,
 			Latitude:       item.Latitude,
@@ -70,7 +80,7 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() error {
 
 		departmentId, err := utils.MustNewUUID()
 		if err != nil {
-			return err
+			return
 		}
 
 		departmentMap[item.DepartmentCode] = Department{
@@ -97,15 +107,17 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() error {
 		departmentId := departmentMap[item.DepartmentCode].ID
 		cityId, err := utils.MustNewUUID()
 		if err != nil {
-			return err
+			return
 		}
 		lon, err := parseFloatLocale(item.Longitude)
 		if err != nil {
-			return fmt.Errorf("longitude inválida %q: %w", item.Longitude, err)
+			fmt.Println("invalid longitude ", item.Longitude)
+			return
 		}
 		lat, err := parseFloatLocale(item.Latitude)
 		if err != nil {
-			return fmt.Errorf("latitude inválida %q: %w", item.Latitude, err)
+			fmt.Println("invalid latitude ", item.Latitude)
+			return
 		}
 		cities = append(cities, models.City{
 			ID:           cityId,
@@ -120,18 +132,13 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() error {
 	// Save cities and departments to JSON files
 	err = utils.SaveJsonFile("cmd/data/processedData/1_departments.json", departments)
 	if err != nil {
-		return err
+		return
 	}
 
 	err = utils.SaveJsonFile("cmd/data/processedData/2_cities.json", cities)
 	if err != nil {
-		return err
+		return
 	}
-
-	return nil
-}
-
-func ExtractUniqueDepartments() {
 
 }
 

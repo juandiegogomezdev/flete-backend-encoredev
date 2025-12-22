@@ -2,6 +2,7 @@ package databaseservice
 
 import (
 	"context"
+	"fmt"
 
 	"encore.app/databaseservice/databasebusiness"
 	"encore.app/databaseservice/databasestore"
@@ -27,6 +28,7 @@ func initDatabaseService() (*DatabaseService, error) {
 //encore:api auth method=GET path=/departments
 func (s *DatabaseService) GetDepartments(ctx context.Context) (GetDepartmentsResponse, error) {
 	departments, err := s.b.GetDepartments(ctx)
+	fmt.Println("Departments", departments)
 	if err != nil {
 		return GetDepartmentsResponse{}, err
 	}
@@ -35,4 +37,17 @@ func (s *DatabaseService) GetDepartments(ctx context.Context) (GetDepartmentsRes
 
 type GetDepartmentsResponse struct {
 	Departments []models.Department `json:"departments"`
+}
+
+//encore:api auth method=GET path=/cities
+func (s *DatabaseService) GetCities(ctx context.Context) (GetCitiesResponse, error) {
+	cities, err := s.b.GetCities(ctx)
+	if err != nil {
+		return GetCitiesResponse{}, err
+	}
+	return GetCitiesResponse{Cities: cities}, nil
+}
+
+type GetCitiesResponse struct {
+	Cities []models.City `json:"cities"`
 }

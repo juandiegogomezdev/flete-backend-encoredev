@@ -26,8 +26,8 @@ func main() {
 
 	b.SeedDepartments()
 	b.SeedCities()
-	// b.SeedUnitCategories()
-	// b.SeedUnits()
+	b.SeedUnits()
+	b.SeedRoles()
 
 	fmt.Println("Seeding completed.")
 }

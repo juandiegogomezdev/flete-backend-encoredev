@@ -64,9 +64,52 @@ func (s *SeedStore) InsertCities(cities []models.City) error {
 	return nil
 }
 
-func (s *SeedStore) InsertUnitCategories(unitCategories []models.UnitCategory) error {
+func (s *SeedStore) InsertUnits(units []models.Unit) error {
+	q := `INSERT INTO units (name, abbreviation) VALUES ($1, $2)`
+
+	// Create a transaction
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	for _, unit := range units {
+		_, err := tx.Exec(q, unit.Name, unit.Abbreviation)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
-func (s *SeedStore) InsertUnits(units []models.Unit) error {
+
+func (s *SeedStore) InsertRoles(roles []models.Role) error {
+	q := `INSERT INTO roles (name) VALUES ($1)`
+
+	// Create a transaction
+	tx, err := s.db.Begin()
+	if err != nil {
+		return err
+	}
+	defer tx.Rollback()
+
+	for _, role := range roles {
+		_, err := tx.Exec(q, role.Name)
+		if err != nil {
+			return err
+		}
+	}
+
+	err = tx.Commit()
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
