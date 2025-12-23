@@ -7,11 +7,18 @@ import (
 	"encore.app/databaseservice/databasebusiness"
 	"encore.app/databaseservice/databasestore"
 	"encore.app/databaseservice/models"
+	"encore.dev/storage/objects"
 	"encore.dev/storage/sqldb"
 )
 
 var primaryDB = sqldb.NewDatabase("primary_db", sqldb.DatabaseConfig{
 	Migrations: "./migrations",
+})
+var PrimaryBucketPublic = objects.NewBucket("primary-bucket-public", objects.BucketConfig{
+	Public: true,
+})
+var PrimaryBucketPrivate = objects.NewBucket("primary-bucket-private", objects.BucketConfig{
+	Public: false,
 })
 
 //encore:service
