@@ -6,5 +6,5 @@ CREATE TABLE IF NOT EXISTS users (
     email VARCHAR(255) UNIQUE,
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now(),
     storage_limit_bytes BIGINT NOT NULL DEFAULT 52428800,
-    storege_used_bytes BIGINT NOT NULL DEFAULT 0,
+    storege_used_bytes BIGINT NOT NULL DEFAULT 0
 )

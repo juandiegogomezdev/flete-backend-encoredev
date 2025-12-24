@@ -9,7 +9,8 @@ import (
 type Organization struct {
 	ID        uuid.UUID `db:"id"`
 	Name      string    `db:"name"`
-	OwnerID   uuid.UUID `db:"owner_id"`
+	OwnerID   string    `db:"owner_id"`
 	ImageKey  *string   `db:"image_key"`
 	CreatedAt time.Time `db:"created_at"`
+	Active    bool      `db:"active"`
 }

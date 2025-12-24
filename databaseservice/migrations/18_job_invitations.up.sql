@@ -1,11 +1,11 @@
-CREATE TYPE membership_status AS ENUM ('active', 'suspended');
+CREATE TYPE job_invitation_status AS ENUM ('pending', 'accepted', 'rejected', 'revoked');
 
-CREATE TABLE IF NOT EXISTS memberships (
+CREATE TABLE job_invitations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     org_id UUID REFERENCES organizations(id),
-    user_id VARCHAR(255) REFERENCES users(id),
+    email VARCHAR(255) NOT NULL,
     role_id UUID REFERENCES roles(id),
-    status membership_status NOT NULL DEFAULT 'active',
+    status job_invitation_status NOT NULL DEFAULT 'pending',
     created_by VARCHAR(255) REFERENCES users(id),
     created_at TIMESTAMP WITH TIME ZONE NOT NULL DEFAULT now()
 )

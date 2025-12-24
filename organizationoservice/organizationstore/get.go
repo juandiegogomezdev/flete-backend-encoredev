@@ -22,21 +22,16 @@ func (s *OrganizationStore) IsAvailableOrganizationName(ctx context.Context, nam
 	return count == 0, nil
 }
 
-func (s *OrganizationStore) GetOrganizationByMembershipId(ctx context.Context, memID uuid.UUID) (models.Organization, error) {
+func (s *OrganizationStore) GetOrganizationByID(ctx context.Context, orgID uuid.UUID) (models.Organization, error) {
 	// Query to get organization by membership ID
-	q := `SELECT o.* FROM organizations o
-		  JOIN memberships m ON o.id = m.organization_id
-		  WHERE m.id = $1 LIMIT 1`
-	// q := `SELECT * FROM organization WHERE id = $1 LIMIT 1`
+	q := `SELECT * FROM organizations WHERE id = $1 LIMIT 1`
 	var org models.Organization
-	err := s.dbx.GetContext(ctx, &org, q, memID)
+	err := s.dbx.GetContext(ctx, &org, q, orgID)
 	if err != nil {
 		if err == sql.ErrNoRows {
-			log.Println("error: organization not found for membership id", memID)
-			return models.Organization{}, fmt.Errorf("membership %s not found", memID)
+			log.Println("error: organization not found for membership id", orgID)
+			return models.Organization{}, fmt.Errorf("membership %s not found", orgID)
 		}
-		log.Println("error querying organization id for membership id", memID, ":", err)
-		return models.Organization{}, fmt.Errorf("error querying organization id: %w", err)
 	}
 	return org, nil
 }
@@ -54,4 +49,8 @@ func (s *OrganizationStore) GetRoleIdByName(ctx context.Context, roleName string
 	}
 	return roleId, nil
 
+}
+
+func (s *OrganizationStore) GetOrganizationManifestFiles(ctx context.Context, orgID uuid.UUID) ([]models.File, error) {
+	q := `SELECT id, size_bytes from file WHERE org_id = `
 }
