@@ -3,7 +3,6 @@ package appService
 import (
 	"encore.app/appservice/appbusiness"
 	"encore.app/appservice/appstore"
-	"encore.app/pkg/resendmailer"
 	"encore.dev/storage/sqldb"
 	"github.com/jmoiron/sqlx"
 )
@@ -31,9 +30,8 @@ type ServiceApp struct {
 func initServiceApp() (*ServiceApp, error) {
 
 	// Initialize the resend mailer
-	m := resendmailer.NewResendMailer(secrets.RESEND_API_KEY, "Acme <onboarding@resend.dev>")
 	s := appstore.NewStoreApp(primaryDB, appDBX)
-	b := appbusiness.NewAppBusiness(s, m)
+	b := appbusiness.NewAppBusiness(s)
 
 	return &ServiceApp{b: b}, nil
 }
