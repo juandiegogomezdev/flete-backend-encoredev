@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS cities (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     name TEXT NOT NULL,
     department_id UUID REFERENCES departments(id),
     code TEXT UNIQUE NOT NULL,

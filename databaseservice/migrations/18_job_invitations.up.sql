@@ -1,7 +1,7 @@
 CREATE TYPE job_invitation_status AS ENUM ('pending', 'accepted', 'rejected', 'revoked');
 
 CREATE TABLE job_invitations (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     org_id UUID REFERENCES organizations(id),
     email VARCHAR(255) NOT NULL,
     role_id UUID REFERENCES roles(id),

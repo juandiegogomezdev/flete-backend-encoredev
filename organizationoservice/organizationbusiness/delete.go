@@ -36,13 +36,30 @@ func (b *OrganizationBusiness) DeleteOrganizationLogoInDatabase(ctx context.Cont
 
 }
 
-func (b *OrganizationBusiness) DeleteOrganizationManifestFiles(ctx context.Context, orgID uuid.UUID) error {
-	err := b.s.DeleteOrganizationManifestFiles(ctx, orgID)
+func (b *OrganizationBusiness) DeleteOrganizationManifestFiles(ctx context.Context, orgID uuid.UUID) ([]*models.File, error) {
+	// Get all manifest files
+	files, err := b.s.GetOrganizationFiles(ctx, orgID, "manifest")
 	if err != nil {
-		return &errs.Error{
-			Message: "Error al eliminar los archivos de manifiesto de la organización",
+		return nil, &errs.Error{
+			Message: "Error al buscar los manifiestos de carga",
 			Code:    errs.Internal,
 		}
 	}
-	return nil
+
+	// Extract IDs
+	var ids []uuid.UUID
+	for _, file := range *files {
+		ids = append(ids, file.ID)
+	}
+
+	// Delete files
+	err = b.s.DeleteFilesByIDs(ctx, ids)
+	if err != nil {
+		return nil, &errs.Error{
+			Message: "Error al borrar los manifiestos de carga",
+			Code:    errs.Internal,
+		}
+	}
+
+	return files, nil
 }

@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS roles (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     name TEXT UNIQUE NOT NULL
 )

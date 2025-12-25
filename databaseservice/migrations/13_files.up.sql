@@ -1,8 +1,7 @@
 CREATE TYPE files_entity_types AS ENUM ('movement', 'travel', 'document');
 
 CREATE TABLE files (
-    id BIGINT PRIMARY KEY GENERATED ALWAYS AS IDENTITY,
-    public_id UUID UNIQUE NOT NULL DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     entity_id UUID NOT NULL,
     entity_type files_entity_types NOT NULL,
 

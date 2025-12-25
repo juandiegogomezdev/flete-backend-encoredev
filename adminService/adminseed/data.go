@@ -1,6 +1,8 @@
 package adminseed
 
-import "encore.dev/types/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type NotificationTemplate struct {
 	ID              uuid.UUID `json:"id" db:"id"`
@@ -13,9 +15,14 @@ type NotificationTemplate struct {
 }
 
 func SeedDataNotificationTemplates() []NotificationTemplate {
+	newID, err := uuid.NewV7()
+	if err != nil {
+		panic("failed to generate UUID for notification template seed data: " + err.Error())
+	}
+
 	return []NotificationTemplate{
 		{
-			ID:              uuid.Must(uuid.NewV4()),
+			ID:              newID,
 			Category:        "document_expiry",
 			Version:         1,
 			SubjectTemplate: "Bienvenido a Flete, {{.UserName}}!",

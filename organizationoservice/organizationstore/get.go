@@ -51,6 +51,13 @@ func (s *OrganizationStore) GetRoleIdByName(ctx context.Context, roleName string
 
 }
 
-func (s *OrganizationStore) GetOrganizationManifestFiles(ctx context.Context, orgID uuid.UUID) ([]models.File, error) {
-	q := `SELECT id, size_bytes from file WHERE org_id = `
+func (s *OrganizationStore) GetOrganizationFiles(ctx context.Context, orgID uuid.UUID, entity_type string) ([]*models.File, error) {
+	q := `SELECT id, size_bytes, bucket, bucket_key from files WHERE org_id = $1 AND entity_type = $2 AND deleted_at IS NULL`
+
+	var files []*models.File
+	err := s.dbx.SelectContext(ctx, &files, q, orgID, entity_type)
+	if err != nil {
+		return nil, fmt.Errorf("error querying organization manifest files: %w", err)
+	}
+	return files, nil
 }

@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS permissions (
-    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    id UUID PRIMARY KEY DEFAULT uuidv7(),
     permission TEXT NOT NULL UNIQUE
 );

@@ -1,6 +1,13 @@
-type file struct {
-	Id         int64     `db:"id"`
-	PublicId   string    `db:"public_id"`
+package models
+
+import (
+	"time"
+
+	"encore.dev/types/uuid"
+)
+
+type File struct {
+	ID         uuid.UUID `db:"id"`
 	EntityID   uuid.UUID `db:"entity_id"`
 	EntityType string    `db:"entity_type"`
 
