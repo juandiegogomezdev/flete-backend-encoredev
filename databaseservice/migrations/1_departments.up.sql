@@ -1,5 +1,5 @@
-CREATE TABLE IF NOT EXISTS departments (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+CREATE TABLE departments (
+    id UUID PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     code TEXT UNIQUE NOT NULL
 )

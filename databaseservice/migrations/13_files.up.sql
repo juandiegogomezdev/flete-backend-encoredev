@@ -1,7 +1,7 @@
 CREATE TYPE files_entity_types AS ENUM ('movement', 'travel', 'document');
 
 CREATE TABLE files (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY,
     entity_id UUID NOT NULL,
     entity_type files_entity_types NOT NULL,
 

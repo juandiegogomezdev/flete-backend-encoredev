@@ -8,7 +8,7 @@ import (
 
 // This is the type returned when a new organization is created along with the membership.
 type Membership struct {
-	Id        uuid.UUID `json:"id"`
+	ID        uuid.UUID `json:"id"`
 	OrgName   string    `json:"orgName"`
 	ImageUrl  string    `json:"imageUrl"`
 	RoleName  string    `json:"roleName"`

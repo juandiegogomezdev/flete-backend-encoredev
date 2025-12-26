@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"encore.app/organizationoservice/shared/types"
+	"encore.app/pkg/utils"
 	"encore.dev/beta/auth"
 	"encore.dev/types/uuid"
 )
@@ -19,18 +20,27 @@ func (s *OrganizationStore) CreateOrganizationAndMembership(ctx context.Context,
 	defer tx.Rollback()
 
 	// Insert organization
-	q := `INSERT INTO organizations (name, owner_id) VALUES ($1, $2) RETURNING id`
+	orgID, err := utils.GenerateUUID()
+	if err != nil {
+		return types.Membership{}, fmt.Errorf("error generating organization ID: %w", err)
+	}
+
+	q := `INSERT INTO organizations (id, name, owner_id) VALUES ($1, $2, $3) RETURNING id`
 	var orgId uuid.UUID
-	err = tx.QueryRow(ctx, q, name, ownerId).Scan(&orgId)
+	err = tx.QueryRow(ctx, q, orgID, name, ownerId).Scan(&orgId)
 	if err != nil {
 		return types.Membership{}, fmt.Errorf("error inserting organization: %w", err)
 	}
 
 	// Insert membership
-	q = `INSERT INTO memberships (user_id, organization_id, role_id) VALUES ($1, $2, $3) RETURNING id, created_at`
-	var membershipId uuid.UUID
+	memID, err := utils.GenerateUUID()
+	if err != nil {
+		return types.Membership{}, fmt.Errorf("error generating membership ID: %w", err)
+	}
+
+	q = `INSERT INTO memberships (id, user_id, organization_id, role_id) VALUES ($1, $2, $3, $4) RETURNING created_at`
 	var createdAt time.Time
-	err = tx.QueryRow(ctx, q, ownerId, orgId, roleID).Scan(&membershipId, &createdAt)
+	err = tx.QueryRow(ctx, q, memID, ownerId, orgId, roleID).Scan(&createdAt)
 	if err != nil {
 		return types.Membership{}, fmt.Errorf("error inserting membership: %w", err)
 	}
@@ -40,7 +50,7 @@ func (s *OrganizationStore) CreateOrganizationAndMembership(ctx context.Context,
 		return types.Membership{}, fmt.Errorf("error committing transaction: %w", err)
 	}
 	return types.Membership{
-		Id:        membershipId,
+		ID:        memID,
 		OrgName:   name,
 		CreatedAt: createdAt,
 	}, nil

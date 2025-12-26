@@ -22,10 +22,10 @@ func (b *OrganizationBusiness) DeleteOrganization(ctx context.Context, orgID uui
 	return nil
 }
 
-func (b *OrganizationBusiness) DeleteOrganizationLogoInDatabase(ctx context.Context, org *models.Organization) error {
+func (b *OrganizationBusiness) DeleteOrganizationLogoInDatabase(ctx context.Context, orgID uuid.UUID) error {
 
 	// Delete logo
-	err := b.s.DeleteOrganizationLogo(ctx, org.ID)
+	err := b.s.DeleteOrganizationLogo(ctx, orgID)
 	if err != nil {
 		return &errs.Error{
 			Message: "Error al eliminar el logo de la organización",
@@ -48,7 +48,7 @@ func (b *OrganizationBusiness) DeleteOrganizationManifestFiles(ctx context.Conte
 
 	// Extract IDs
 	var ids []uuid.UUID
-	for _, file := range *files {
+	for _, file := range files {
 		ids = append(ids, file.ID)
 	}
 
@@ -57,6 +57,62 @@ func (b *OrganizationBusiness) DeleteOrganizationManifestFiles(ctx context.Conte
 	if err != nil {
 		return nil, &errs.Error{
 			Message: "Error al borrar los manifiestos de carga",
+			Code:    errs.Internal,
+		}
+	}
+
+	return files, nil
+}
+
+func (b *OrganizationBusiness) DeleteOrganizationDocumentFiles(ctx context.Context, orgID uuid.UUID) ([]*models.File, error) {
+	// Get all document files
+	files, err := b.s.GetOrganizationFiles(ctx, orgID, "document")
+	if err != nil {
+		return nil, &errs.Error{
+			Message: "Error al buscar los documentos de la organización",
+			Code:    errs.Internal,
+		}
+	}
+
+	// Extract IDs
+	var ids []uuid.UUID
+	for _, file := range files {
+		ids = append(ids, file.ID)
+	}
+
+	// Delete files
+	err = b.s.DeleteFilesByIDs(ctx, ids)
+	if err != nil {
+		return nil, &errs.Error{
+			Message: "Error al borrar los documentos de la organización",
+			Code:    errs.Internal,
+		}
+	}
+
+	return files, nil
+}
+
+func (b *OrganizationBusiness) DeleteOrganizationMovementFiles(ctx context.Context, orgID uuid.UUID) ([]*models.File, error) {
+	// Get all movement files
+	files, err := b.s.GetOrganizationFiles(ctx, orgID, "movement")
+	if err != nil {
+		return nil, &errs.Error{
+			Message: "Error al buscar los archivos de movimientos",
+			Code:    errs.Internal,
+		}
+	}
+
+	// Extract IDs
+	var ids []uuid.UUID
+	for _, file := range files {
+		ids = append(ids, file.ID)
+	}
+
+	// Delete files
+	err = b.s.DeleteFilesByIDs(ctx, ids)
+	if err != nil {
+		return nil, &errs.Error{
+			Message: "Error al borrar los archivos de movimientos",
 			Code:    errs.Internal,
 		}
 	}

@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS units (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY,
     name TEXT UNIQUE NOT NULL,
     abbreviation TEXT UNIQUE NOT NULL
 )

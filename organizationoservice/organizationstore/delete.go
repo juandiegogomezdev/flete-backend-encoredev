@@ -52,15 +52,15 @@ func (s *OrganizationStore) DeleteOrganization(ctx context.Context, orgId uuid.U
 	return nil
 }
 
-// func (s *OrganizationStore) DeleteOrganizationLogo(ctx context.Context, orgID uuid.UUID) error {
-// 	q := `UPDATE organizations SET image_key = NULL WHERE id = $1`
-// 	_, err := s.db.Exec(ctx, q, orgID)
-// 	if err != nil {
-// 		log.Println("Error deleting organization: ", err)
-// 		return err
-// 	}
-// 	return nil
-// }
+func (s *OrganizationStore) DeleteOrganizationLogo(ctx context.Context, orgID uuid.UUID) error {
+	q := `UPDATE organizations SET image_key = NULL WHERE id = $1`
+	_, err := s.db.Exec(ctx, q, orgID)
+	if err != nil {
+		log.Println("Error deleting organization: ", err)
+		return err
+	}
+	return nil
+}
 
 // func (s *OrganizationStore) DeleteOrganizationManifestFiles(ctx context.Context, orgID uuid.UUID) error {
 // 	q := `DELETE FROM organization_manifest_files WHERE org_id = $1`
@@ -71,3 +71,13 @@ func (s *OrganizationStore) DeleteOrganization(ctx context.Context, orgId uuid.U
 // 	}
 // 	return nil
 // }
+
+func (s *OrganizationStore) DeleteFilesByIDs(ctx context.Context, ids []uuid.UUID) error {
+	q := `DELETE FROM files WHERE ID = ANY($1)`
+	_, err := s.db.Exec(ctx, q, ids)
+	if err != nil {
+		log.Println("Error deleting files by IDs: ", err)
+		return err
+	}
+	return nil
+}

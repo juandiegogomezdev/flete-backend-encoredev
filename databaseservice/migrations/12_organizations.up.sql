@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS organizations (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY,
     owner_id VARCHAR(255) REFERENCES users(id),
     name TEXT NOT NULL,
     image_key TEXT,

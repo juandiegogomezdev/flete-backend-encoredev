@@ -51,16 +51,16 @@ func (b *SeedBusiness) SeedUnits() error {
 	units, err := utils.ReadJsonFile[models.Unit]("cmd/data/processedData/3_units.json")
 
 	if err != nil {
-		fmt.Println("4_units => Error: ", err)
+		fmt.Println("3_units => Error: ", err)
 		return err
 	}
 	err = b.store.InsertUnits(units)
 	if err != nil {
-		fmt.Println("4_units => Error: ", err)
+		fmt.Println("3_units => Error: ", err)
 		return err
 	}
 
-	fmt.Println("4_units => Ok")
+	fmt.Println("3_units => Ok")
 	return nil
 }
 

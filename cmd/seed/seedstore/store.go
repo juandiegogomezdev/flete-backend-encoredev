@@ -65,7 +65,7 @@ func (s *SeedStore) InsertCities(cities []models.City) error {
 }
 
 func (s *SeedStore) InsertUnits(units []models.Unit) error {
-	q := `INSERT INTO units (name, abbreviation) VALUES ($1, $2)`
+	q := `INSERT INTO units (id, name, abbreviation) VALUES ($1, $2, $3)`
 
 	// Create a transaction
 	tx, err := s.db.Begin()
@@ -75,7 +75,7 @@ func (s *SeedStore) InsertUnits(units []models.Unit) error {
 	defer tx.Rollback()
 
 	for _, unit := range units {
-		_, err := tx.Exec(q, unit.Name, unit.Abbreviation)
+		_, err := tx.Exec(q, unit.ID, unit.Name, unit.Abbreviation)
 		if err != nil {
 			return err
 		}
@@ -90,7 +90,7 @@ func (s *SeedStore) InsertUnits(units []models.Unit) error {
 }
 
 func (s *SeedStore) InsertRoles(roles []models.Role) error {
-	q := `INSERT INTO roles (name) VALUES ($1)`
+	q := `INSERT INTO roles (id, name) VALUES ($1, $2)`
 
 	// Create a transaction
 	tx, err := s.db.Begin()
@@ -100,7 +100,7 @@ func (s *SeedStore) InsertRoles(roles []models.Role) error {
 	defer tx.Rollback()
 
 	for _, role := range roles {
-		_, err := tx.Exec(q, role.Name)
+		_, err := tx.Exec(q, role.ID, role.Name)
 		if err != nil {
 			return err
 		}

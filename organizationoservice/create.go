@@ -11,6 +11,7 @@ import (
 	"encore.app/databaseservice"
 	types "encore.app/organizationoservice/shared/types"
 	"encore.app/pkg/utils"
+	"encore.dev"
 	"encore.dev/beta/auth"
 	"encore.dev/beta/errs"
 	"encore.dev/storage/objects"
@@ -38,17 +39,26 @@ type CreateOrganizationResponse struct {
 func (s *OrganizationService) UploadOrganizationLogo(w http.ResponseWriter, r *http.Request) {
 	// Get user ID and organization ID
 	userID, _ := auth.UserID()
-	orgID, err := uuid.FromString(r.URL.Query().Get("orgID"))
+	orgIDStr := encore.CurrentRequest().PathParams.Get("orgID")
+	orgID, err := uuid.FromString(orgIDStr)
 	if err != nil {
-		errs.HTTPError(w, fmt.Errorf("Organización no encontrada: %w", err))
+		errs.HTTPError(w, fmt.Errorf("Organización inválida"))
 		return
 	}
 
 	// Get organization
 	org, err := s.b.GetOrganizationById(r.Context(), orgID)
 
+	if org.OwnerID != string(userID) {
+		errs.HTTPError(w, &errs.Error{
+			Message: "Solo el dueño de la empresa puede subir el logo",
+			Code:    errs.PermissionDenied,
+		})
+		return
+	}
+
 	// Delete previous logo in database
-	err = s.b.DeleteOrganizationLogoInDatabase(r.Context(), &org, userID)
+	err = s.b.DeleteOrganizationLogoInDatabase(r.Context(), orgID)
 	if err != nil {
 		errs.HTTPError(w, err)
 		return
@@ -63,7 +73,7 @@ func (s *OrganizationService) UploadOrganizationLogo(w http.ResponseWriter, r *h
 	}
 
 	// Parse multipart form
-	r.Body = http.MaxBytesReader(w, r.Body, 11<<20)
+	r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
 	err = utils.ParseMultipartForm(r)
 	if err != nil {
 		http.Error(w, "La imagen es demasiado pesada", http.StatusRequestEntityTooLarge)
@@ -80,7 +90,7 @@ func (s *OrganizationService) UploadOrganizationLogo(w http.ResponseWriter, r *h
 	defer file.Close()
 
 	// Generate key: userId/orgId/logo/uuidFile
-	uuidFile, err := utils.MustNewUUID()
+	uuidFile, err := utils.GenerateUUID()
 	if err != nil {
 		errs.HTTPError(w, err)
 		return

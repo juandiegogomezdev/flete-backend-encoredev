@@ -1,4 +1,4 @@
 CREATE TABLE IF NOT EXISTS permissions (
-    id UUID PRIMARY KEY DEFAULT uuidv7(),
+    id UUID PRIMARY KEY,
     permission TEXT NOT NULL UNIQUE
 );

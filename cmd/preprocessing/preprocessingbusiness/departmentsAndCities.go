@@ -78,7 +78,7 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() {
 			continue
 		}
 
-		departmentId, err := utils.MustNewUUID()
+		departmentId, err := utils.GenerateUUID()
 		if err != nil {
 			return
 		}
@@ -105,7 +105,7 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() {
 
 	for _, item := range normalized {
 		departmentId := departmentMap[item.DepartmentCode].ID
-		cityId, err := utils.MustNewUUID()
+		cityId, err := utils.GenerateUUID()
 		if err != nil {
 			return
 		}
@@ -132,13 +132,17 @@ func (b *DataPreprocessingBusiness) ExtractCitiesAndDepartments() {
 	// Save cities and departments to JSON files
 	err = utils.SaveJsonFile("cmd/data/processedData/1_departments.json", departments)
 	if err != nil {
+		fmt.Println("01_departments => Error: ", err)
 		return
 	}
+	fmt.Println("01_departments => Ok")
 
 	err = utils.SaveJsonFile("cmd/data/processedData/2_cities.json", cities)
 	if err != nil {
+		fmt.Println("02_cities => Error: ", err)
 		return
 	}
+	fmt.Println("02_cities => Ok")
 
 }
 

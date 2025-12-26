@@ -47,11 +47,11 @@ func (b *BusinessApp) CreateCompanyOrganization(ctx context.Context, userID uuid
 	}
 
 	// Generate the new organization ID and membership ID
-	orgID, err := utils.MustNewUUID()
+	orgID, err := utils.GenerateUUID()
 	if err != nil {
 		return sharedapp.Membership{}, err
 	}
-	memID, err := utils.MustNewUUID()
+	memID, err := utils.GenerateUUID()
 	if err != nil {
 		return sharedapp.Membership{}, err
 	}
